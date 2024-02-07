@@ -3,8 +3,56 @@ let socket = io('http://'+ window.location.host +'/');
 
 socket.on('connect', function () {
   setDisconnected(false);
-  socket.on('newContent', function(newHTML) {
-    document.querySelector(".markdown-body").innerHTML = newHTML;
+  socket.on('newContent', function(data) {
+
+    // Support for opended files list
+    let markdownBodyElm = document.querySelector(".markdown-body");
+    markdownBodyElm.innerHTML = data.html;
+    document.title = data.currentFile.replace(/^.*[\\/]/, '');
+
+    let fileListEntryElm = document.createElement('div');
+    fileListEntryElm.className = "file-entry";
+    let fileListContainer = document.getElementById("file-list-container");
+    fileListContainer.replaceChildren();
+
+    if (data && data.openedFiles) {
+      let openedFiles = JSON.parse(data.openedFiles);
+
+      if (openedFiles != undefined) {
+        openedFiles.forEach(function(file) {
+
+          if (file) {
+            let wrapperElm = document.createElement('div');
+            wrapperElm.className = "file-wrapper"
+
+            // Close button
+            let closeElm = document.createElement('div');
+            closeElm.className = 'close-button';
+            closeElm.onclick = function() {
+              socket.emit("closefile", { closeFile: file} )
+              fileListContainer.removeChild(wrapperElm)
+              return false
+            }
+            wrapperElm.append(closeElm);
+
+            // New file link
+            let fileNameElm = document.createElement('div')
+            fileNameElm.className = "file-name"
+            let aElm = document.createElement('a');
+            aElm.href = file
+            aElm.innerHTML = file.replace(/^.*[\\/]/, '');
+            aElm.onclick = function() {
+              socket.emit("openfile", { newFile: file })
+              return false;
+            }
+            fileNameElm.append(aElm);
+            wrapperElm.append(fileNameElm);
+
+            fileListContainer.append(wrapperElm);
+          }
+        })
+      }
+    }
 
     // scroll to the hyperlink with id="marker"
     let marker = document.getElementById("marker");
