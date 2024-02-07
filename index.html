@@ -23,6 +23,33 @@
       background: white;
       color: red;
     }
+    #file-list-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 4px;
+    }
+    .file-wrapper {
+      display: flex;
+      margin: 2px 0;
+    }
+    .close-button {
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAbrqAAG66gHB8Tn1AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAohJREFUSImtlrFrE3EUx7/f10AFoVOr4JDjoouIa+d4d5hBt4ItunQKZBO3To79EwoVR0t0dygkl05ShE4S6CD9xYJS2i7tfHnPIZdyueSStvS73e/98nl539+79ztiioIg8ACskQxJPjOzJQAgeWZmXTNrA2jGcfyniMFJi1EUlVV1U0TeAChN+xMAElX9JiIbrVbreGaCarW6WiqVtgEszADndZkkSX1vb+9rdnEu+xAEwXsR+UTy3g3hADBPcsX3/Qvn3P5Ygmq1uprCJ9p2HaW/rXmed9jr9bpAalEURWUAvzBuyymARQBSwFQA5wAe5NYvATxvtVrHAgCqujkB7lR12cwaKWgMbmYNVV0G4HKxhZQJBkHgichvjHbLqaouD9svDMM6ya1MJWpmjXa7vQ0M2llEfuYqSVT1iQBYw3grLpKsDR/a7fZ2ppIROACkexdzjBKAtblKpfKR5ONckCRf+b5/4pw7AADn3IHv+ycAvmfhE6rLyhhF0V8AjyYEx6zIawYcAP7J8PUvkJDcCsOwfgs4zGypMHhXEpJnU+KFFuUOfqJInomZda8LD8OwnrVrVhIz60o6cq8FJ7mVP5NpScysLQCaAJJc7NzMdvNwDA507ODTvec5RgKgSQAIguCLiLzNbXCq+oJkraBb1MwaZrYrIh0A/khQdSeO43clABCRDQCvMTqP/PT1Lxp2klo2cdilzMG4Pjo6uiiXy47kSm5c30fBrZeK6Z4rmZn1+/31OI5/XCUAgF6v1/V9/wJA7bZ3gg30odPpfB6ujdxozrl9z/MOReQlgPkb8i/7/f56Fj6WABhUUqlUdlT1IcmnmDIKUiWq2iS5MrQlq6lW3MVny3/2eF0M/+RocwAAAABJRU5ErkJggg==");
+      background-size: 15px;
+      background-position: center center;
+      background-repeat: no-repeat;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      margin: 2px;
+    }
+    .file-name {
+      padding-top: 2px;
+    }
+    .file-name a {
+      text-decoration: none;
+      color: #555555;
+    }
   </style>
   <script src="/node_modules/mermaid/dist/mermaid.min.js"></script>
   <script src="/socket.io/socket.io.min.js"></script>
