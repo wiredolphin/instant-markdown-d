@@ -17,7 +17,11 @@ fs-instant-markdown branch
 The aim of this branch is to add some extras to the markdown server of the original project.
 Current changes are:
 - Added anchor capabilities. This modifications allows to automatically add an id attribute to the headings, allowing to reference content sections through HTML anchors
-- Added fs-instant-markdown support (see: https://github.com/wiredolphin/fs-instant-markdown)
+- Added *fs-instant-markdown support* (see: https://github.com/wiredolphin/fs-instant-markdown)
+- Opens multiple files, until the [fs-instant-markdown](https://github.com/wiredolphin/fs-instant-markdown) script is in execution
+- Added list of opened files on a pseudo sidebar; a close-file button is
+added near each file
+
 
 
 Installation
