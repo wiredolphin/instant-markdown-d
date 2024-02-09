@@ -12,7 +12,7 @@ socket.on('connect', function () {
 
     let fileListEntryElm = document.createElement('div');
     fileListEntryElm.className = "file-entry";
-    let fileListContainer = document.getElementById("file-list-container");
+    let fileListContainer = document.getElementById("opened-files");
     fileListContainer.replaceChildren();
 
     if (data && data.openedFiles) {

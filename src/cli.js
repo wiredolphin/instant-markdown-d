@@ -9,6 +9,13 @@ const process = require('process'),
   path = require('path'),
   url = require('url');
 
+var currentFile = "";
+
+if (typeof localStorage === "undefined" || localStorage === null) {
+  var LocalStorage = require('node-localstorage').LocalStorage;
+  var localStorage = new LocalStorage('./scratch');
+}
+
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
   default: {port: 8090, debug: false, anchor: false },
@@ -50,6 +57,7 @@ Options:
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
   --debug            Be verbose and do not open browser
+  --verbose          Just be verbose
   -V, --version      Display version
   -h, --help         Display help\
   `);
@@ -113,7 +121,7 @@ const mjNodeConfig = {
   speakText: false
 };
 
-function mathJaxRenderEmit(newHtml) {
+function mathJaxRenderEmit(newHtml, file) {
   if(argv.mathjax) {
     mjpage(
       newHtml,
@@ -130,7 +138,26 @@ function mathJaxRenderEmit(newHtml) {
     );
   }
   else {
-    io.emit('newContent', newHtml)
+
+    let openedFiles = JSON.parse(localStorage.getItem('openedFiles'))
+    if (openedFiles == undefined) {
+      openedFiles = [];
+    }
+
+    if (file && !openedFiles.includes(file)) {
+      openedFiles.push(file);
+      localStorage.setItem('openedFiles', JSON.stringify(openedFiles))
+      // console.log(openedFiles)
+    }
+
+    currentFile = file;
+
+    io.emit('newContent', {
+      html: newHtml,
+      currentFile: currentFile,
+      openedFiles: localStorage.getItem('openedFiles')
+    });
+
   }
   if (argv.debug) {
     console.debug('Emitting new data');
@@ -139,9 +166,9 @@ function mathJaxRenderEmit(newHtml) {
 }
 
 let lastWrittenMarkdown = '';
-function writeMarkdown(body) {
+function writeMarkdown(body, file) {
   lastWrittenMarkdown = md.render(body);
-  mathJaxRenderEmit(lastWrittenMarkdown);
+  mathJaxRenderEmit(lastWrittenMarkdown, file);
 }
 
 function readAllInput(input, callback) {
@@ -238,14 +265,26 @@ function httpHandler(req, res) {
     case 'DELETE':
       res.setHeader('Content-Type', 'text/plain');
       res.writeHead(204, { 'Content-Type': 'text/plain' });
-      io.emit('die');
       res.end('ok')
-      process.exit();
+
+      // Cleanup only if history is empty
+      let openedFiles = JSON.parse(localStorage.getItem('openedFiles'))
+      if (openedFiles == undefined || openedFiles.length == 0) {
+        io.emit('die');
+        process.exit();
+      }
       break;
 
     case 'PUT':
       readAllInput(req, function(body){
-        writeMarkdown(body);
+
+        let filePath = ""
+        if (req.headers['x-file-path'] != undefined) {
+          filePath = req.headers['x-file-path']
+        }
+
+
+        writeMarkdown(body, filePath);
         res.writeHead(200);
         res.end();
       });
@@ -256,11 +295,61 @@ function httpHandler(req, res) {
 }
 
 io.on('connection', function(sock){
-  process.stdout.write('connection established!');
+  // process.stdout.write('connection established!');
   if (lastWrittenMarkdown) {
     sock.emit('newContent', lastWrittenMarkdown);  // Quick preview
     if (argv.mathjax) mathJaxRenderEmit(lastWrittenMarkdown);
   }
+  else {
+    let openedFiles = localStorage.getItem('openedFiles')
+    if (openedFiles != undefined) {
+      let openedFilesArr = JSON.parse(openedFiles)
+      if (openedFilesArr.length) {
+        if (argv.verbose) {
+          console.log("There where opened files in a previous session:")
+          console.log(openedFilesArr)
+        }
+        // sock.emit('newContent', {
+        //   html: "",
+        //   currentFile: "",
+        //   openedFiles: openedFiles
+        // });
+        currentFile = openedFilesArr[0];
+        exec("curl http://127.0.0.1:" + argv.port +
+        " -H 'X-File-Path: " + currentFile + "'" +
+        " --upload-file '" + currentFile + "'")
+      }
+    }
+  }
+
+  sock.on('openfile', function(data) {
+    currentFile = data.newFile;
+    exec("curl http://127.0.0.1:" + argv.port +
+    " -H 'X-File-Path: " + data.newFile + "'" +
+    " --upload-file '" + data.newFile + "'")
+  });
+
+  sock.on('closefile', function(data) {
+
+    let openedFiles = JSON.parse(localStorage.getItem('openedFiles'))
+
+    if (data.closeFile && openedFiles && openedFiles.includes(data.closeFile)) {
+      openedFiles = openedFiles.filter(item => item !== data.closeFile)
+      localStorage.setItem('openedFiles', JSON.stringify(openedFiles))
+
+      if (currentFile == data.closeFile || openedFiles.length == 0) {
+        exec("curl http://127.0.0.1:" + argv.port + " -X DELETE")
+      }
+
+      let lastOpened = openedFiles.slice(-1)
+      if (lastOpened && lastOpened.length > 0) {
+        exec("curl http://127.0.0.1:" + argv.port +
+        " -H 'X-File-Path: " + lastOpened[0] + "'" +
+        " --upload-file '" + lastOpened[0] + "'")
+      }
+    }
+
+  })
 });
 
 
