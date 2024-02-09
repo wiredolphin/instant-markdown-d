@@ -11,8 +11,8 @@ editor to interface with it. One currently exists for Vim:
 https://github.com/instant-markdown/vim-instant-markdown
 
 
-fs-instant-markdown
--------------------
+fs-instant-markdown branch
+--------------------------
 
 The aim of this branch is to add some extras to the markdown server of the original project.
 Current changes are:
