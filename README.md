@@ -11,13 +11,13 @@ editor to interface with it. One currently exists for Vim:
 https://github.com/instant-markdown/vim-instant-markdown
 
 
-This Fork
----------
+fs-instant-markdown
+-------------------
 
-The aim of this fork is to add some extras to the markdown server of the original project.
-Current improvements are:
+The aim of this branch is to add some extras to the markdown server of the original project.
+Current changes are:
 - Added anchor capabilities. This modifications allows to automatically add an id attribute to the headings, allowing to reference content sections through HTML anchors
-- Added fs-instant-markdown support.
+- Added fs-instant-markdown support (see: https://github.com/wiredolphin/fs-instant-markdown)
 
 
 Installation
