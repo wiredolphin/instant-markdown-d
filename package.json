@@ -37,7 +37,8 @@
     "send": "~0.17.2",
     "socket.io": "^4.7.2",
     "markdown-it-anchor": "8.6.7",
-    "node-localstorage": "3.0.5"
+    "node-localstorage": "3.0.5",
+    "markdown-it-table-of-contents": "0.6.0"
   },
   "devDependencies": {
     "genversion": "^3.1.1"

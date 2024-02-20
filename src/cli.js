@@ -18,7 +18,12 @@ if (typeof localStorage === "undefined" || localStorage === null) {
 
 const argv = require('minimist')(process.argv.slice(2), {
   string: ['browser'],
-  default: {port: 8090, debug: false, anchor: false },
+  default: {
+    port: 8090,
+    debug: false,
+    anchor: false,
+    toc: undefined,
+  },
   alias: {V: 'version', h: 'help'},
 });
 
@@ -54,6 +59,9 @@ Options:
   --mathjax          Enable MathJax parsing
   --mermaid          Enable Mermaid.js diagrams
   --anchor           Add id attribute to HTML headings
+  --toc LEVELS       Add table-of-content where level is
+                     a list of heading levels to be used, i.e.: "[2,3]".
+                     The --anchor options must be used in conjuction
   --browser BROWSER  Use a custom browser
   --port PORT        Use a custom port (default: 8090)
   --debug            Be verbose and do not open browser
@@ -102,6 +110,13 @@ if (argv.anchor) {
     tabIndex: false
   }
   md.use(require('markdown-it-anchor'), anchorOpt);
+}
+
+if (argv.toc) {
+  let tocOptions = {
+    "includeLevel": argv.toc
+  }
+  md.use(require("markdown-it-table-of-contents"), tocOptions);
 }
 
 const mjPageConfig = {

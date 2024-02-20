@@ -21,6 +21,7 @@ Current changes are:
 - Opens multiple files, until the [fs-instant-markdown](https://github.com/wiredolphin/fs-instant-markdown) script is in execution
 - Added list of opened files on a pseudo sidebar; a close-file button is
 added near each file
+- Added table-of-content feature
 
 
 
